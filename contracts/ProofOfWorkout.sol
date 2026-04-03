@@ -68,11 +68,6 @@ contract ProofOfWorkout {
     /// @param steps  Step count extracted by the OCR relayer.
     function submitProof(uint256 steps) external onlyJoined {
         require(steps >= 100 && steps <= 999999, "Steps out of range");
-        // Cooldown: one submission per 20 hours
-        require(
-            block.timestamp >= participants[msg.sender].lastSubmission + 20 hours,
-            "Cooldown: submit once per 20h"
-        );
 
         uint256 reward = steps * REWARD_PER_STEP;
         participants[msg.sender].totalSteps   += steps;

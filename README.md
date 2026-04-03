@@ -30,24 +30,28 @@ pow-app/
 ## Quick Start
 
 ### 1. Install dependencies
+
 ```bash
 npm install
 # Node.js v20+ required
 ```
 
 ### 2. Configure environment
+
 ```bash
 cp .env.example .env.local
 # Fill in NEXT_PUBLIC_SEPOLIA_RPC_URL, NEXT_PUBLIC_CONTRACT_ADDRESS, RELAYER_PRIVATE_KEY
 ```
 
 ### 3. Deploy the contract (Remix / Hardhat)
+
 - Open `contracts/ProofOfWorkout.sol` in [Remix IDE](https://remix.ethereum.org)
 - Compile with Solidity `^0.8.24`
 - Deploy to **Sepolia** testnet
 - Copy the deployed address → `NEXT_PUBLIC_CONTRACT_ADDRESS`
 
 ### 4. Run the dev server
+
 ```bash
 npm run dev
 # Open http://localhost:3000
@@ -57,25 +61,25 @@ npm run dev
 
 ## Workflow
 
-| Step | Action | Details |
-|------|--------|---------|
-| 1 | **Connect** | MetaMask prompts; app switches to Sepolia automatically |
-| 2 | **Join** | Calls `joinChallenge()` — one-time wallet TX |
-| 3 | **Upload** | Screenshot from Google Fit / Apple Health (max 3/day) |
-| 4 | **OCR** | Tesseract.js extracts text client-side, regex finds 3–6 digit step count |
-| 5 | **Submit** | `submitProof(steps)` sent on-chain; rewards accrue per step |
-| 6 | **Refresh** | `getRewards()` read-only call returns accrued POW tokens |
+| Step | Action      | Details                                                                  |
+| ---- | ----------- | ------------------------------------------------------------------------ |
+| 1    | **Connect** | MetaMask prompts; app switches to Sepolia automatically                  |
+| 2    | **Join**    | Calls `joinChallenge()` — one-time wallet TX                             |
+| 3    | **Upload**  | Screenshot from Google Fit / Apple Health (max 3/day)                    |
+| 4    | **OCR**     | Tesseract.js extracts text client-side, regex finds 3–6 digit step count |
+| 5    | **Submit**  | `submitProof(steps)` sent on-chain; rewards accrue per step              |
+| 6    | **Refresh** | `getRewards()` read-only call returns accrued POW tokens                 |
 
 ---
 
 ## Contract Functions
 
-| Function | Caller | Description |
-|----------|--------|-------------|
-| `joinChallenge()` | User wallet | Enrol in the challenge |
-| `submitProof(uint256 steps)` | Relayer / user | Record verified step count |
-| `getRewards() → uint256` | Read-only call | Fetch accrued rewards in wei |
-| `hasJoined(address) → bool` | Read-only call | Check enrolment status |
+| Function                     | Caller         | Description                  |
+| ---------------------------- | -------------- | ---------------------------- |
+| `joinChallenge()`            | User wallet    | Enrol in the challenge       |
+| `submitProof(uint256 steps)` | Relayer / user | Record verified step count   |
+| `getRewards() → uint256`     | Read-only call | Fetch accrued rewards in wei |
+| `hasJoined(address) → bool`  | Read-only call | Check enrolment status       |
 
 ---
 
@@ -91,13 +95,38 @@ This demo allows the user's wallet to call `submitProof` directly — swap to th
 
 ---
 
+## Deployment
+
+### Live Demo
+
+- **Contract**: [0x5f6859AE104f5E9be247a3Ce43E8A5D76E649C09](https://sepolia.etherscan.io/address/0x5f6859AE104f5E9be247a3Ce43E8A5D76E649C09) (Sepolia)
+- **Network**: Ethereum Sepolia Testnet
+
+### Deploy to Vercel
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions.
+
+Quick deploy:
+
+```bash
+vercel
+```
+
+**Required Environment Variables for Vercel**:
+
+- `NEXT_PUBLIC_CONTRACT_ADDRESS=0x5f6859AE104f5E9be247a3Ce43E8A5D76E649C09`
+- `NEXT_PUBLIC_SEPOLIA_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_KEY`
+- `NEXT_PUBLIC_ALCHEMY_API_KEY=YOUR_KEY`
+
+---
+
 ## Environment Variables
 
-| Variable | Scope | Description |
-|----------|-------|-------------|
-| `NEXT_PUBLIC_SEPOLIA_RPC_URL` | Client | Alchemy/Infura Sepolia endpoint |
-| `NEXT_PUBLIC_CONTRACT_ADDRESS` | Client | Deployed contract address |
-| `RELAYER_PRIVATE_KEY` | **Server only** | Relayer burner wallet private key |
-| `SEPOLIA_RPC_URL` | Server | Server-side RPC (can match public) |
+| Variable                       | Scope           | Description                        |
+| ------------------------------ | --------------- | ---------------------------------- |
+| `NEXT_PUBLIC_SEPOLIA_RPC_URL`  | Client          | Alchemy/Infura Sepolia endpoint    |
+| `NEXT_PUBLIC_CONTRACT_ADDRESS` | Client          | Deployed contract address          |
+| `RELAYER_PRIVATE_KEY`          | **Server only** | Relayer burner wallet private key  |
+| `SEPOLIA_RPC_URL`              | Server          | Server-side RPC (can match public) |
 
 > ⚠️ Never prefix `RELAYER_PRIVATE_KEY` with `NEXT_PUBLIC_` — it would be exposed in the browser bundle.

@@ -74,10 +74,7 @@ export default function ProofOfWorkoutPage() {
     [],
   );
 
-  // Scroll log to bottom
-  useEffect(() => {
-    logEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [logs]);
+  // Removed auto-scroll to allow users to review logs without interruption
 
   // ---------------------------------------------------------------------------
   // Load daily upload count from sessionStorage on mount
@@ -219,9 +216,9 @@ export default function ProofOfWorkoutPage() {
     addLog("Sending joinChallenge() transaction...", "info");
     try {
       const contract = getProviderContract();
-      await contract.methods.joinChallenge().send({ 
+      await contract.methods.joinChallenge().send({
         from: account,
-        gas: 100000 // Simple write operation
+        gas: "100000", // Simple write operation
       });
       setHasJoined(true);
       setJoinTxStatus("success");
@@ -314,7 +311,7 @@ export default function ProofOfWorkoutPage() {
         setOcrStatus("done");
         setDetectedSteps(steps);
         incrementUploadCount();
-        addLog(`Detected steps: ${steps.toLocaleString()}`, "success");
+        addLog(`✅ Successfully detected ${steps.toLocaleString()} steps! Click "Submit Proof" to record on-chain.`, "success");
       }
     } catch (err: unknown) {
       setOcrStatus("error");
@@ -335,9 +332,9 @@ export default function ProofOfWorkoutPage() {
     addLog(`Submitting proof: ${detectedSteps} steps on-chain...`, "info");
     try {
       const contract = getProviderContract();
-      await contract.methods.submitProof(detectedSteps).send({ 
+      await contract.methods.submitProof(detectedSteps).send({
         from: account,
-        gas: 150000 // Slightly more complex write operation
+        gas: "150000", // Slightly more complex write operation
       });
       setSubmitTxStatus("success");
       addLog(
@@ -349,7 +346,20 @@ export default function ProofOfWorkoutPage() {
       await fetchRewards();
     } catch (err: unknown) {
       setSubmitTxStatus("error");
-      addLog(`submitProof failed: ${(err as Error).message}`, "error");
+      const errorMessage = (err as Error).message;
+      
+      // Better error messages for common failures
+      if (errorMessage.includes("Cooldown")) {
+        addLog("⏰ Cooldown active: You can only submit proof once every 20 hours. Please try again later.", "error");
+      } else if (errorMessage.includes("Not enrolled") || errorMessage.includes("Not joined")) {
+        addLog("❌ You must join the challenge first before submitting proofs!", "error");
+      } else if (errorMessage.includes("Steps out of range")) {
+        addLog("❌ Step count must be between 100 and 999,999", "error");
+      } else if (errorMessage.includes("gas")) {
+        addLog(`⛽ Gas error: ${errorMessage}. Try again with a different gas amount.`, "error");
+      } else {
+        addLog(`❌ Submit failed: ${errorMessage}`, "error");
+      }
     }
   };
 
@@ -635,11 +645,14 @@ export default function ProofOfWorkoutPage() {
                     color: canSubmit ? "#000" : "var(--color-pow-muted)",
                     boxShadow: canSubmit ? "var(--shadow-glow-green)" : "none",
                   }}
+                  title={!canSubmit && detectedSteps === null ? "Upload a screenshot first" : ""}
                 >
                   {submitTxStatus === "pending"
                     ? "⏳ Submitting..."
                     : submitTxStatus === "success"
                     ? "✓ Submitted!"
+                    : detectedSteps !== null
+                    ? `Submit ${detectedSteps.toLocaleString()} Steps`
                     : "Submit Proof"}
                 </button>
 
@@ -651,7 +664,9 @@ export default function ProofOfWorkoutPage() {
                     borderColor: "var(--color-pow-accent)",
                     color: "var(--color-pow-accent)",
                   }}
-                  title={!hasJoined ? "Join the challenge first to see rewards" : ""}
+                  title={
+                    !hasJoined ? "Join the challenge first to see rewards" : ""
+                  }
                 >
                   {isLoadingRewards ? "⏳ Loading..." : "Refresh Rewards"}
                 </button>
@@ -661,22 +676,31 @@ export default function ProofOfWorkoutPage() {
             {/* Detected steps banner */}
             {detectedSteps !== null && (
               <div
-                className="rounded-lg px-4 py-3 flex items-center gap-3 border-glow-green"
-                style={{ background: "rgba(34,197,94,0.08)" }}
+                className="rounded-lg px-4 py-3 flex items-center gap-3 border-glow-green animate-pulse"
+                style={{ 
+                  background: "rgba(34,197,94,0.12)",
+                  border: "2px solid rgba(34,197,94,0.4)"
+                }}
               >
-                <span className="text-2xl">🚶</span>
-                <div>
+                <span className="text-3xl">✅</span>
+                <div className="flex-1">
                   <p
-                    className="text-xs"
-                    style={{ color: "var(--color-pow-muted)" }}
+                    className="text-xs font-semibold"
+                    style={{ color: "var(--color-pow-green)" }}
                   >
-                    OCR Detected
+                    Steps Successfully Detected!
                   </p>
                   <p
                     className="text-2xl font-bold"
                     style={{ color: "var(--color-pow-green)" }}
                   >
                     {detectedSteps.toLocaleString()} steps
+                  </p>
+                  <p
+                    className="text-xs mt-1"
+                    style={{ color: "var(--color-pow-muted)" }}
+                  >
+                    Click "Submit Proof" below to record this on the blockchain
                   </p>
                 </div>
               </div>

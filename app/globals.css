@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* Google Fonts import for Bebas Neue */
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@300;400;500;600&display=swap");
 
 @theme {
   --color-pow-bg: #0a0a0f;
@@ -62,8 +64,10 @@
   }
 
   .grid-bg {
-    background-image:
-      linear-gradient(rgba(249, 115, 22, 0.04) 1px, transparent 1px),
+    background-image: linear-gradient(
+        rgba(249, 115, 22, 0.04) 1px,
+        transparent 1px
+      ),
       linear-gradient(90deg, rgba(249, 115, 22, 0.04) 1px, transparent 1px);
     background-size: 40px 40px;
   }
@@ -99,27 +103,55 @@
 
 /* Keyframe animations */
 @keyframes pulse-glow {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 @keyframes slide-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes flicker {
-  0%, 100% { opacity: 1; }
-  92% { opacity: 1; }
-  93% { opacity: 0.6; }
-  94% { opacity: 1; }
-  96% { opacity: 0.8; }
-  97% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  93% {
+    opacity: 0.6;
+  }
+  94% {
+    opacity: 1;
+  }
+  96% {
+    opacity: 0.8;
+  }
+  97% {
+    opacity: 1;
+  }
 }
 
 .animate-pulse-glow {
@@ -137,6 +169,3 @@
 .animate-flicker {
   animation: flicker 4s ease-in-out infinite;
 }
-
-/* Google Fonts import for Bebas Neue */
-@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@300;400;500;600&display=swap");

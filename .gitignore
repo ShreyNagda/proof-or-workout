@@ -33,6 +33,13 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# hardhat
+hardhat-cache/
+hardhat-artifacts/
+cache/
+artifacts/
+typechain-types/
+
 # vercel
 .vercel
 

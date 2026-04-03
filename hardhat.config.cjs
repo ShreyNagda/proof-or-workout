@@ -4,6 +4,7 @@ require("dotenv").config({ path: ".env.local" });
 process.env.TS_NODE_PROJECT = "./tsconfig.hardhat.json";
 
 require("@nomicfoundation/hardhat-toolbox");
+require("@nomicfoundation/hardhat-ethers");
 
 const DEPLOYER_PRIVATE_KEY = process.env.DEPLOYER_PRIVATE_KEY || "";
 const ALCHEMY_API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY || "";

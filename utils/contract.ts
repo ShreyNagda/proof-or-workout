@@ -80,7 +80,7 @@ export function getProviderWeb3(): Web3 {
   if (typeof window === "undefined" || !window.ethereum) {
     throw new Error("MetaMask (window.ethereum) not found.");
   }
-  return new Web3(window.ethereum as Parameters<typeof Web3>[0]);
+  return new Web3(window.ethereum as any) as Web3;
 }
 
 // ---------------------------------------------------------------------------

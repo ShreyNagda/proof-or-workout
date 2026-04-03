@@ -219,7 +219,10 @@ export default function ProofOfWorkoutPage() {
     addLog("Sending joinChallenge() transaction...", "info");
     try {
       const contract = getProviderContract();
-      await contract.methods.joinChallenge().send({ from: account });
+      await contract.methods.joinChallenge().send({ 
+        from: account,
+        gas: 100000 // Simple write operation
+      });
       setHasJoined(true);
       setJoinTxStatus("success");
       addLog("Successfully joined the challenge!", "success");
@@ -234,6 +237,10 @@ export default function ProofOfWorkoutPage() {
   // ---------------------------------------------------------------------------
   const fetchRewards = useCallback(async () => {
     if (!account) return;
+    if (!hasJoined) {
+      addLog("Join the challenge first to see rewards", "warn");
+      return;
+    }
     setIsLoadingRewards(true);
     addLog("Fetching on-chain rewards...", "info");
     try {
@@ -248,12 +255,12 @@ export default function ProofOfWorkoutPage() {
     } finally {
       setIsLoadingRewards(false);
     }
-  }, [account, addLog]);
+  }, [account, hasJoined, addLog]);
 
-  // Auto-fetch rewards when account changes
+  // Auto-fetch rewards when account changes and user has joined
   useEffect(() => {
-    if (account) fetchRewards();
-  }, [account, fetchRewards]);
+    if (account && hasJoined) fetchRewards();
+  }, [account, hasJoined, fetchRewards]);
 
   // ---------------------------------------------------------------------------
   // OCR — process uploaded image
@@ -290,7 +297,9 @@ export default function ProofOfWorkoutPage() {
 
       const rawText = result.data.text;
       addLog(
-        `Raw OCR output (truncated): ${rawText.slice(0, 120).replace(/\n/g, " ")}`,
+        `Raw OCR output (truncated): ${rawText
+          .slice(0, 120)
+          .replace(/\n/g, " ")}`,
         "info",
       );
 
@@ -326,7 +335,10 @@ export default function ProofOfWorkoutPage() {
     addLog(`Submitting proof: ${detectedSteps} steps on-chain...`, "info");
     try {
       const contract = getProviderContract();
-      await contract.methods.submitProof(detectedSteps).send({ from: account });
+      await contract.methods.submitProof(detectedSteps).send({ 
+        from: account,
+        gas: 150000 // Slightly more complex write operation
+      });
       setSubmitTxStatus("success");
       addLog(
         `Proof submitted! ${detectedSteps.toLocaleString()} steps recorded.`,
@@ -580,12 +592,14 @@ export default function ProofOfWorkoutPage() {
                   {ocrStatus === "processing"
                     ? "Running OCR..."
                     : ocrStatus === "done"
-                      ? "Steps detected!"
-                      : ocrStatus === "error"
-                        ? "OCR failed — try another image"
-                        : uploadsRemaining > 0
-                          ? `Drop Google Fit / Apple Health screenshot\n(${uploadsRemaining} upload${uploadsRemaining !== 1 ? "s" : ""} remaining today)`
-                          : "Daily limit reached"}
+                    ? "Steps detected!"
+                    : ocrStatus === "error"
+                    ? "OCR failed — try another image"
+                    : uploadsRemaining > 0
+                    ? `Drop Google Fit / Apple Health screenshot\n(${uploadsRemaining} upload${
+                        uploadsRemaining !== 1 ? "s" : ""
+                      } remaining today)`
+                    : "Daily limit reached"}
                 </span>
                 <input
                   ref={fileInputRef}
@@ -625,18 +639,19 @@ export default function ProofOfWorkoutPage() {
                   {submitTxStatus === "pending"
                     ? "⏳ Submitting..."
                     : submitTxStatus === "success"
-                      ? "✓ Submitted!"
-                      : "Submit Proof"}
+                    ? "✓ Submitted!"
+                    : "Submit Proof"}
                 </button>
 
                 <button
                   onClick={fetchRewards}
-                  disabled={isLoadingRewards}
+                  disabled={isLoadingRewards || !hasJoined}
                   className="px-5 py-3 rounded-lg text-sm font-semibold transition-all duration-200 border disabled:opacity-30"
                   style={{
                     borderColor: "var(--color-pow-accent)",
                     color: "var(--color-pow-accent)",
                   }}
+                  title={!hasJoined ? "Join the challenge first to see rewards" : ""}
                 >
                   {isLoadingRewards ? "⏳ Loading..." : "Refresh Rewards"}
                 </button>

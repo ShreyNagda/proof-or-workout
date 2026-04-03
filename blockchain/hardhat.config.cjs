@@ -1,4 +1,4 @@
-require("dotenv").config({ path: ".env.local" });
+require("dotenv").config({ path: "../.env.local" });
 
 // Set ts-node to use hardhat-specific tsconfig
 process.env.TS_NODE_PROJECT = "./tsconfig.hardhat.json";
@@ -41,10 +41,9 @@ const config = {
       chainId: 11155111,
     },
   },
-  // Path config — keeps Hardhat from conflicting with Next.js
   paths: {
     sources: "./contracts",
-    tests: "./test",
+    tests: "./tests",
     cache: "./hardhat-cache",
     artifacts: "./hardhat-artifacts",
   },

@@ -4,11 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:full": "node scripts/dev.js",
-    "compile": "hardhat compile",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "hardhat": "cd blockchain && hardhat",
+    "compile": "cd blockchain && hardhat compile",
+    "deploy": "cd blockchain && hardhat run scripts/deploy.js",
+    "deploy:sepolia": "cd blockchain && hardhat run scripts/deploy.js --network sepolia"
   },
   "dependencies": {
     "next": "^16.2.2",

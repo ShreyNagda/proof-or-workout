@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Image from "next/image";
 import {
   getProviderWeb3,
   getProviderContract,
@@ -311,7 +312,10 @@ export default function ProofOfWorkoutPage() {
         setOcrStatus("done");
         setDetectedSteps(steps);
         incrementUploadCount();
-        addLog(`✅ Successfully detected ${steps.toLocaleString()} steps! Click "Submit Proof" to record on-chain.`, "success");
+        addLog(
+          `✅ Successfully detected ${steps.toLocaleString()} steps! Click "Submit Proof" to record on-chain.`,
+          "success",
+        );
       }
     } catch (err: unknown) {
       setOcrStatus("error");
@@ -347,16 +351,28 @@ export default function ProofOfWorkoutPage() {
     } catch (err: unknown) {
       setSubmitTxStatus("error");
       const errorMessage = (err as Error).message;
-      
+
       // Better error messages for common failures
       if (errorMessage.includes("Cooldown")) {
-        addLog("⏰ Cooldown active: You can only submit proof once every 20 hours. Please try again later.", "error");
-      } else if (errorMessage.includes("Not enrolled") || errorMessage.includes("Not joined")) {
-        addLog("❌ You must join the challenge first before submitting proofs!", "error");
+        addLog(
+          "⏰ Cooldown active: You can only submit proof once every 20 hours. Please try again later.",
+          "error",
+        );
+      } else if (
+        errorMessage.includes("Not enrolled") ||
+        errorMessage.includes("Not joined")
+      ) {
+        addLog(
+          "❌ You must join the challenge first before submitting proofs!",
+          "error",
+        );
       } else if (errorMessage.includes("Steps out of range")) {
         addLog("❌ Step count must be between 100 and 999,999", "error");
       } else if (errorMessage.includes("gas")) {
-        addLog(`⛽ Gas error: ${errorMessage}. Try again with a different gas amount.`, "error");
+        addLog(
+          `⛽ Gas error: ${errorMessage}. Try again with a different gas amount.`,
+          "error",
+        );
       } else {
         addLog(`❌ Submit failed: ${errorMessage}`, "error");
       }
@@ -405,19 +421,28 @@ export default function ProofOfWorkoutPage() {
         {/* ── Header ── */}
         <header className="text-center space-y-2 animate-slide-up">
           <div className="flex items-center justify-center gap-3 mb-1">
-            <span className="text-4xl animate-flicker">⚡</span>
+            <Image
+              src="/logo.png"
+              alt="POW Logo"
+              width={64}
+              height={64}
+              className="animate-pulse-glow"
+              priority
+            />
             <h1
-              className="text-display text-6xl md:text-7xl tracking-widest"
+              className="text-display text-6xl md:text-7xl tracking-widest text-pow-accent uppercase"
               style={{ color: "var(--color-pow-accent)" }}
             >
               PROOF OF WORKOUT
             </h1>
-            <span
-              className="text-4xl animate-flicker"
-              style={{ animationDelay: "1s" }}
-            >
-              ⚡
-            </span>
+            <Image
+              src="/logo.png"
+              alt="POW Logo"
+              width={64}
+              height={64}
+              className="animate-pulse-glow"
+              priority
+            />
           </div>
           <p
             className="text-xs tracking-[0.4em] uppercase"
@@ -645,7 +670,11 @@ export default function ProofOfWorkoutPage() {
                     color: canSubmit ? "#000" : "var(--color-pow-muted)",
                     boxShadow: canSubmit ? "var(--shadow-glow-green)" : "none",
                   }}
-                  title={!canSubmit && detectedSteps === null ? "Upload a screenshot first" : ""}
+                  title={
+                    !canSubmit && detectedSteps === null
+                      ? "Upload a screenshot first"
+                      : ""
+                  }
                 >
                   {submitTxStatus === "pending"
                     ? "⏳ Submitting..."
@@ -677,9 +706,9 @@ export default function ProofOfWorkoutPage() {
             {detectedSteps !== null && (
               <div
                 className="rounded-lg px-4 py-3 flex items-center gap-3 border-glow-green animate-pulse"
-                style={{ 
+                style={{
                   background: "rgba(34,197,94,0.12)",
-                  border: "2px solid rgba(34,197,94,0.4)"
+                  border: "2px solid rgba(34,197,94,0.4)",
                 }}
               >
                 <span className="text-3xl">✅</span>
